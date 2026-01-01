@@ -71,7 +71,8 @@ const SecurityLevel: React.FC<Props> = ({ onComplete }) => {
     <div className="max-w-4xl mx-auto py-8">
       <div className="mb-12 text-center">
         <h2 className="text-3xl font-bold text-stone-800 mb-2">Mission Finale : Gardien du Web</h2>
-        <p className="text-stone-500">Teste ta vigilance face aux dangers et apprends les règles d'or.</p>
+        <p className="text-stone-500 mb-1">Teste ta vigilance face aux dangers et apprends les règles d'or.</p>
+        <p className="text-sm text-orange-600 font-medium">💡 Choisis ta réponse ! Même si tu te trompes, tu apprendras quelque chose d'important.</p>
       </div>
 
       <div className="bg-white rounded-[2rem] shadow-xl border border-stone-100 p-8 md:p-12">

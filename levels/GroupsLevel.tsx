@@ -53,7 +53,8 @@ const GroupsLevel: React.FC<Props> = ({ onComplete }) => {
       <div className="flex justify-between items-end mb-8">
         <div>
           <h2 className="text-3xl font-bold text-stone-800 mb-2">Mission 1 : Le Grand Tri</h2>
-          <p className="text-stone-500">Classe chaque exemple dans le bon type de regroupement social.</p>
+          <p className="text-stone-500 mb-1">Classe chaque exemple dans le bon type de regroupement social.</p>
+          <p className="text-sm text-orange-600 font-medium">💡 C'est normal de se tromper, c'est comme ça qu'on apprend !</p>
         </div>
         <div className="text-stone-400 font-medium">
           {currentIndex + 1} / {ITEMS.length}
