@@ -18,13 +18,14 @@ const TRACES = [
 
 const TracesLevel: React.FC<Props> = ({ onComplete }) => {
   const [index, setIndex] = useState(0);
-  const [score, setScore] = useState(0);
+  const [answers, setAnswers] = useState<Record<string, boolean>>({});
   const [reveal, setReveal] = useState(false);
 
   const current = TRACES[index];
 
   const handleChoice = (type: 'volontaire' | 'involontaire') => {
-    if (type === current.type) setScore(s => s + 15);
+    const isCorrect = type === current.type;
+    setAnswers(prev => ({ ...prev, [current.id]: isCorrect }));
     setReveal(true);
   };
 
@@ -33,9 +34,14 @@ const TracesLevel: React.FC<Props> = ({ onComplete }) => {
       setIndex(prev => prev + 1);
       setReveal(false);
     } else {
-      onComplete(score);
+      // Calculate final score from all answers
+      const correctCount = Object.values(answers).filter(Boolean).length;
+      const finalScore = correctCount * 15;
+      onComplete(finalScore);
     }
   };
+
+  const currentScore = Object.values(answers).filter(Boolean).length * 15;
 
   return (
     <div className="max-w-4xl mx-auto py-8">
