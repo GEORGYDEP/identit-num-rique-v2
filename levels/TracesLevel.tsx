@@ -47,7 +47,8 @@ const TracesLevel: React.FC<Props> = ({ onComplete }) => {
     <div className="max-w-4xl mx-auto py-8">
       <div className="mb-10 text-center">
           <h2 className="text-3xl font-bold text-stone-800 mb-2">Mission 3 : Le Double Numérique</h2>
-          <p className="text-stone-500">Distingue les traces <span className="text-emerald-600 font-bold">actives</span> (volontaires) des traces <span className="text-red-500 font-bold">passives</span> (involontaires).</p>
+          <p className="text-stone-500 mb-1">Distingue les traces <span className="text-emerald-600 font-bold">actives</span> (volontaires) des traces <span className="text-red-500 font-bold">passives</span> (involontaires).</p>
+          <p className="text-sm text-orange-600 font-medium">💡 Essaie de deviner ! Tu verras l'explication après chaque réponse.</p>
       </div>
 
       <div className="bg-white rounded-[3rem] shadow-2xl overflow-hidden border border-stone-100">

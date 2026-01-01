@@ -20,11 +20,19 @@ const ELEMENTS = [
 const IdentityLevel: React.FC<Props> = ({ onComplete }) => {
   const [items, setItems] = useState(ELEMENTS);
   const [placed, setPlaced] = useState<Record<string, { category: 'personnelle' | 'collective', isCorrect: boolean }>>({});
+  const [completionTimer, setCompletionTimer] = useState<NodeJS.Timeout | null>(null);
 
   const handlePlace = (id: string, category: 'personnelle' | 'collective') => {
     const item = items.find(i => i.id === id);
-    if (!item || placed[id]) return;
+    if (!item) return;
 
+    // Cancel any pending completion timer to allow corrections
+    if (completionTimer) {
+      clearTimeout(completionTimer);
+      setCompletionTimer(null);
+    }
+
+    // Allow re-placing an item (removing the check for placed[id])
     const isCorrect = item.category === category;
     setPlaced(prev => {
       const newPlaced = { ...prev, [id]: { category, isCorrect } };
@@ -34,7 +42,8 @@ const IdentityLevel: React.FC<Props> = ({ onComplete }) => {
         // Calculate score based on correct answers
         const correctCount = Object.values(newPlaced).filter(p => p.isCorrect).length;
         const score = Math.round((correctCount / ELEMENTS.length) * 100);
-        setTimeout(() => onComplete(score), 1500);
+        const timer = setTimeout(() => onComplete(score), 1500);
+        setCompletionTimer(timer);
       }
 
       return newPlaced;
@@ -42,6 +51,12 @@ const IdentityLevel: React.FC<Props> = ({ onComplete }) => {
   };
 
   const handleRemove = (id: string) => {
+    // Cancel any pending completion timer when removing an item
+    if (completionTimer) {
+      clearTimeout(completionTimer);
+      setCompletionTimer(null);
+    }
+
     setPlaced(prev => {
       const newPlaced = { ...prev };
       delete newPlaced[id];
@@ -55,7 +70,8 @@ const IdentityLevel: React.FC<Props> = ({ onComplete }) => {
     <div className="max-w-5xl mx-auto py-8">
       <div className="text-center mb-12">
         <h2 className="text-3xl font-bold text-stone-800 mb-2">Mission 2 : Ton Portrait Chinois</h2>
-        <p className="text-stone-500">L'identité sociale est la combinaison de qui tu es (personnel) et à quoi tu appartiens (collectif).</p>
+        <p className="text-stone-500 mb-2">L'identité sociale est la combinaison de qui tu es (personnel) et à quoi tu appartiens (collectif).</p>
+        <p className="text-sm text-orange-600 font-medium">💡 Tu peux essayer et te tromper ! Clique sur un élément placé pour le retirer ou sur l'autre catégorie pour le déplacer.</p>
       </div>
 
       <div className="grid md:grid-cols-2 gap-8 mb-12">
