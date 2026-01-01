@@ -37,15 +37,13 @@ const SecurityLevel: React.FC<Props> = ({ onComplete }) => {
   const [qIndex, setQIndex] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
-  const [score, setScore] = useState(0);
+  const [answers, setAnswers] = useState<Record<number, number>>({});
 
   const handleSelect = (idx: number) => {
     if (showExplanation) return;
     setSelected(idx);
     setShowExplanation(true);
-    if (idx === QUESTIONS[qIndex].correct) {
-      setScore(s => s + 25);
-    }
+    setAnswers(prev => ({ ...prev, [qIndex]: idx }));
   };
 
   const next = () => {
@@ -54,9 +52,18 @@ const SecurityLevel: React.FC<Props> = ({ onComplete }) => {
       setSelected(null);
       setShowExplanation(false);
     } else {
-      onComplete(score);
+      // Calculate final score from all answers
+      const correctCount = Object.entries(answers).filter(
+        ([questionIdx, answerIdx]) => QUESTIONS[Number(questionIdx)].correct === answerIdx
+      ).length;
+      const finalScore = correctCount * 25;
+      onComplete(finalScore);
     }
   };
+
+  const currentScore = Object.entries(answers).filter(
+    ([questionIdx, answerIdx]) => QUESTIONS[Number(questionIdx)].correct === answerIdx
+  ).length * 25;
 
   const current = QUESTIONS[qIndex];
 

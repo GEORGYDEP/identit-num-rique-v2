@@ -19,25 +19,34 @@ const ELEMENTS = [
 
 const IdentityLevel: React.FC<Props> = ({ onComplete }) => {
   const [items, setItems] = useState(ELEMENTS);
-  const [placed, setPlaced] = useState<Record<string, 'personnelle' | 'collective'>>({});
-  const [completedCount, setCompletedCount] = useState(0);
+  const [placed, setPlaced] = useState<Record<string, { category: 'personnelle' | 'collective', isCorrect: boolean }>>({});
 
   const handlePlace = (id: string, category: 'personnelle' | 'collective') => {
     const item = items.find(i => i.id === id);
     if (!item || placed[id]) return;
 
-    if (item.category === category) {
-      setPlaced(prev => ({ ...prev, [id]: category }));
-      setCompletedCount(prev => {
-        const newVal = prev + 1;
-        if (newVal === ELEMENTS.length) {
-          setTimeout(() => onComplete(100), 1500);
-        }
-        return newVal;
-      });
-    } else {
-      // Small shake animation or visual cue for error could go here
-    }
+    const isCorrect = item.category === category;
+    setPlaced(prev => {
+      const newPlaced = { ...prev, [id]: { category, isCorrect } };
+
+      // Check if all items are placed
+      if (Object.keys(newPlaced).length === ELEMENTS.length) {
+        // Calculate score based on correct answers
+        const correctCount = Object.values(newPlaced).filter(p => p.isCorrect).length;
+        const score = Math.round((correctCount / ELEMENTS.length) * 100);
+        setTimeout(() => onComplete(score), 1500);
+      }
+
+      return newPlaced;
+    });
+  };
+
+  const handleRemove = (id: string) => {
+    setPlaced(prev => {
+      const newPlaced = { ...prev };
+      delete newPlaced[id];
+      return newPlaced;
+    });
   };
 
   const currentItems = items.filter(i => !placed[i.id]);
@@ -57,12 +66,24 @@ const IdentityLevel: React.FC<Props> = ({ onComplete }) => {
             </div>
             <h3 className="text-xl font-bold text-blue-800 mb-6 uppercase tracking-wider">Identité Personnelle</h3>
             <div className="flex flex-wrap gap-3 justify-center">
-                {ELEMENTS.filter(i => placed[i.id] === 'personnelle').map(i => (
-                    <div key={i.id} className="bg-white px-4 py-2 rounded-xl shadow-sm border border-blue-100 flex items-center gap-2 text-sm font-medium animate-in zoom-in">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                        {i.text}
-                    </div>
-                ))}
+                {ELEMENTS.filter(i => placed[i.id]?.category === 'personnelle').map(i => {
+                    const isCorrect = placed[i.id]?.isCorrect;
+                    return (
+                        <button
+                            key={i.id}
+                            onClick={() => handleRemove(i.id)}
+                            className={`px-4 py-2 rounded-xl shadow-sm border flex items-center gap-2 text-sm font-medium animate-in zoom-in transition-all hover:scale-105 ${
+                                isCorrect
+                                    ? 'bg-white border-emerald-300 hover:border-emerald-400'
+                                    : 'bg-red-50 border-red-300 hover:border-red-400'
+                            }`}
+                            title="Cliquer pour retirer"
+                        >
+                            <CheckCircle2 className={`w-4 h-4 ${isCorrect ? 'text-emerald-500' : 'text-red-500'}`} />
+                            {i.text}
+                        </button>
+                    );
+                })}
             </div>
         </div>
 
@@ -73,12 +94,24 @@ const IdentityLevel: React.FC<Props> = ({ onComplete }) => {
             </div>
             <h3 className="text-xl font-bold text-orange-800 mb-6 uppercase tracking-wider">Identité Collective</h3>
             <div className="flex flex-wrap gap-3 justify-center">
-                {ELEMENTS.filter(i => placed[i.id] === 'collective').map(i => (
-                    <div key={i.id} className="bg-white px-4 py-2 rounded-xl shadow-sm border border-orange-100 flex items-center gap-2 text-sm font-medium animate-in zoom-in">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                        {i.text}
-                    </div>
-                ))}
+                {ELEMENTS.filter(i => placed[i.id]?.category === 'collective').map(i => {
+                    const isCorrect = placed[i.id]?.isCorrect;
+                    return (
+                        <button
+                            key={i.id}
+                            onClick={() => handleRemove(i.id)}
+                            className={`px-4 py-2 rounded-xl shadow-sm border flex items-center gap-2 text-sm font-medium animate-in zoom-in transition-all hover:scale-105 ${
+                                isCorrect
+                                    ? 'bg-white border-emerald-300 hover:border-emerald-400'
+                                    : 'bg-red-50 border-red-300 hover:border-red-400'
+                            }`}
+                            title="Cliquer pour retirer"
+                        >
+                            <CheckCircle2 className={`w-4 h-4 ${isCorrect ? 'text-emerald-500' : 'text-red-500'}`} />
+                            {i.text}
+                        </button>
+                    );
+                })}
             </div>
         </div>
       </div>
